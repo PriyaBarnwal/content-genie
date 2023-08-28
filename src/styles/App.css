@@ -1,0 +1,172 @@
+body {
+  font-family: Roboto, sans-serif;
+  min-height: 100vh;
+  background-color: #333333;
+  color: #ffffff;
+  margin: 0px;
+}
+
+.MuiAppBar-colorDefault {
+  color: rgb(146, 134, 134) !important;
+  background-color: #000000 !important;
+}
+
+.upload-panel {
+  border: 1px solid #c3c3c3;
+  border-radius: 10px;
+  background-color: #555555;
+  position: relative;
+  background-image: url('../assets/placeholder.png');
+  background-size: cover;
+}
+
+.form-panel {
+  border: 1px solid #c3c3c3;
+  border-radius: 10px;
+  background-color: #555555;
+  position: relative;
+  margin-top: 16px;
+}
+
+.side-panel {
+  background-color: #555555;
+  margin-left: 0 !important;
+  border: 1px solid #c3c3c3;
+  border-radius: 10px;
+  margin-top: 16px !important;
+  height: 840px;
+}
+
+.side-button {
+  color: #555555 !important;
+  background-color: #c2c2c2;
+  border: 1px solid #9b9b9b;
+  text-transform: capitalize !important;
+  font-weight: 500;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid grey;
+  padding-left: 15px;
+}
+
+#my-form {
+  display: flex;
+  flex-direction: row;
+  position:absolute;
+  top: -14%;
+  width: 90%;
+  height: 54px;
+  margin: 0 5%;
+}
+
+#my-form input,
+#my-form div {
+  border: 1px solid grey;
+  padding: 2px;
+  background-color: #000000 !important;
+  color: white;
+}
+
+#my-form div {
+  border-left-width: 0;
+  border-top-right-radius: 50px !important;
+  border-bottom-right-radius: 50px !important;
+  display: flex;
+  align-items: center;
+}
+
+.include-btn {
+  padding: 0 15px !important;
+  border-right: 1px solid grey !important;
+  border-radius:0 !important;
+}
+
+.avoid-btn {
+  padding: 0 15px !important;
+}
+
+#my-form input {
+  flex-grow: 2;
+  border-right-width: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+  padding-left: 20px;
+}
+
+input:focus {
+  outline: none;
+}
+
+#my-form button {
+  color: rgb(167, 157, 157);
+  border-left-width: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.image-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 600px;
+}
+
+input[type="range"] {
+  accent-color: white;
+  width: 100px;
+  height: 5px;
+  border-radius: 5px;
+}
+
+.MuiChip-outlined .MuiChip-deleteIconSmall {
+  margin-right: 3px;
+  color: whitesmoke;
+}
+
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.main-section {
+  
+}
