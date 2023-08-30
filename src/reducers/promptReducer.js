@@ -25,6 +25,8 @@ import {
           ...state,
           [payload.type]: newRes
         }
+      case 'RESET':
+          return initialState
       default: 
         return state
     }

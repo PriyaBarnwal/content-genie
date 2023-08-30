@@ -2,22 +2,32 @@ import React from 'react'
 import { Grid, Paper, Button } from '@material-ui/core'
 import { connect } from 'react-redux'
 import placeHolder from '../assets/sideplaceholder.png'
-import { selectImage, selectCaption } from '../actions/imagesActions'
+import { selectImage, selectCaption, generateCaption, reset } from '../actions/imagesActions'
 
-const SidePanel= ({results, selectImage, selectCaption, selectedResult, selectedCaption, captionGenerated, captions, hashtags}) => {
+const SidePanel= ({results, selectImage, selectCaption, selectedResult, selectedCaption, captionGenerated, generateCaption, captions, hashtags, reset}) => {
 	const imgObjects = results.map((res, index) => {
 		return <img src={res} alt="" height="150" width="260" style={{marginBottom: '10px', borderRadius: '5px', cursor: 'pointer', border: (selectedResult.idx === index? '1px solid white': 0)}} onClick={()=> selectImage(res, index)}/>
 	})
+
+	const handleDownload = () => {
+    if (selectedResult) {
+      // Create a link element
+      const link = document.createElement('a')
+      link.href = selectedResult.res
+      link.download = 'downloaded.jpg' // Specify the default filename for download
+      link.click()
+    }
+  }
 
 	const sideObj = () => {
 		if (results.length>0 && !captionGenerated) {
 			return (
 				<Grid item style={{textAlign: 'center', marginTop: '10px'}}>
 				{imgObjects}
-				<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize'}} onClick={()=> console.log('')}>
+				<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize'}} onClick={handleDownload}>
 				Download image
 			</Button> 
-			<Button variant="contained" color="info" style={{ background: 'rgba(255, 255, 255, 0.55)', textTransform: 'capitalize', marginTop: '10px'}} fullWidth onClick={()=> console.log('')}>
+			<Button variant="contained" color="info" style={{ background: 'rgba(255, 255, 255, 0.55)', textTransform: 'capitalize', marginTop: '10px'}} fullWidth onClick={()=> generateCaption(selectedResult.res)}>
 				Generate captions
 			</Button> 
 				</Grid>
@@ -46,7 +56,7 @@ const SidePanel= ({results, selectImage, selectCaption, selectedResult, selected
 						<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize'}} onClick={()=> console.log('')}>
 							Open in editor
 						</Button>
-						<Button variant="contained" color="info" style={{ background: 'rgba(255, 255, 255, 0.55)', textTransform: 'capitalize', marginTop: '10px'}} fullWidth onClick={()=> console.log('')}>
+						<Button variant="contained" color="info" style={{ background: 'rgba(255, 255, 255, 0.55)', textTransform: 'capitalize', marginTop: '10px'}} fullWidth onClick={reset}>
 							Reset
 						</Button> 
 				</>
@@ -83,4 +93,4 @@ const mapStateToProps = state => ({
 	hashtags: state.images.hashtags
 })
   
-export default connect(mapStateToProps, {selectImage, selectCaption })(SidePanel)
+export default connect(mapStateToProps, {selectImage, selectCaption, generateCaption, reset })(SidePanel)

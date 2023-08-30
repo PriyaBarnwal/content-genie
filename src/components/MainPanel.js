@@ -9,27 +9,52 @@ import ImageUploader from './ImageUploader'
 
 const MainPanel= ({addPrompt, removePrompt, loading, includes, avoid, image, removeObject, replaceObject, fillObject}) => {
   const [prompt, setPrompt] = useState('')
+	const createTemp = (canvasElement) => {
+		const context = canvasElement.getContext('2d')
+			
+		const imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+		const data = imageData.data;
+			
+		for (let i = 0; i < data.length; i += 4) {
+			  const r = data[i]
+				const g = data[i + 1]
+			  const b = data[i + 2]
+			  if((r+g+b) === 0 && data[i+3] === 255){
+				  data[i] = 255
+				  data[i + 1] = 255
+				  data[i + 2] = 255
+				} else {
+				  data[i] = 0
+					data[i + 1] = 0
+			  	data[i + 2] = 0
+				}
+			}
+			
+		const tempCanvas = document.createElement('canvas');
+		tempCanvas.width = context.canvas.width;
+		tempCanvas.height = context.canvas.height;
+		tempCanvas.getContext('2d').putImageData(imageData, 0, 0)
+		return tempCanvas.toDataURL("image/png")
+	}
 	const fillBackground =() => {
 		const canvasElement = document.getElementById("my-canvas")
+		
 		if(canvasElement) {
-			const img = canvasElement.toDataURL("image/png")
-			fillObject(img, image.data_url, includes.join(','), avoid.join(','))
+			fillObject(createTemp(canvasElement), image.data_url, includes.join(','), avoid.join(','))
 		}
 	}
 
 	const replaceObj =() => {
 		const canvasElement = document.getElementById("my-canvas")
 		if(canvasElement) {
-			const img = canvasElement.toDataURL("image/png")
-			replaceObject(img, image.data_url, includes.join(','))
+			replaceObject(createTemp(canvasElement), image.data_url, includes.join(','), avoid.join(','))
 		}
 	}
 
 	const removeObj =() => {
 		const canvasElement = document.getElementById("my-canvas")
 		if(canvasElement) {
-			const img = canvasElement.toDataURL("image/png")
-			removeObject(img, image.data_url)
+			removeObject(createTemp(canvasElement), image.data_url)
 		}
 	}
 

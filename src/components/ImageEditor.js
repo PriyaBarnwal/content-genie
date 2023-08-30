@@ -1,110 +1,143 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react'
 import { IconButton } from '@material-ui/core'
 import UndoIcon from '@material-ui/icons/Undo'
 import RedoIcon from '@material-ui/icons/Redo'
 import usePrevious from '../usePrevious'
 
-function CanvasApp({image, parentWidth}) {
-  const canvasRef = useRef(null);
-  const [context, setContext] = useState(null);
-  const [brushSize, setBrushSize] = useState(15);
-  const [drawing, setDrawing] = useState(false);
-  const [undoStack, setUndoStack] = useState([]);
-  const [redoStack, setRedoStack] = useState([]);
+function CanvasApp({image, parentWidth, resultsGenerated}) {
+  const canvasRef = useRef(null)
+  const [context, setContext] = useState(null)
+  const [brushSize, setBrushSize] = useState(15)
+  const [drawing, setDrawing] = useState(false)
+  const [undoStack, setUndoStack] = useState([])
+  const [redoStack, setRedoStack] = useState([])
+  const prevResultsGenerated = usePrevious(resultsGenerated)
 
-  const prevImage = usePrevious(image.data_url)
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    setContext(ctx);
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    setContext(ctx)
     
-  }, [canvasRef]);
+  }, [canvasRef])
 
   useEffect(()=> {
-      if (image.data_url && context) {
-    const image1 = document.createElement("img")
-    image1.setAttribute('crossorigin', 'anonymous')
-    image1.src = image.data_url
-    console.log("yo")
-              image1.width = parentWidth
-              image1.height = 600
-              image1.addEventListener("load", () => {
-                  context?.drawImage(image1, 0, 0, parentWidth, 600)
-                  setUndoStack([canvasRef.current.toDataURL()]);
-              })
-              image1.addEventListener("error", ()=> console.log("error"))
+    if (image.data_url && context) {
+      const image1 = document.createElement("img")
+      image1.setAttribute('crossorigin', 'anonymous')
+      image1.src = image.data_url
+      console.log("yo")
+      image1.width = parentWidth
+      image1.height = 600
+      if (resultsGenerated && prevResultsGenerated !== resultsGenerated) {
+        setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
       }
-  }, [context, image, parentWidth])
+      image1.addEventListener("load", () => {
+        context?.drawImage(image1, 0, 0, parentWidth, 600)
+        setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
+      })
+      image1.addEventListener("error", (err)=> console.log("error", err))
+    }
+  }, [context, image, parentWidth, resultsGenerated, prevResultsGenerated])
 
   // Handle mouse down event to start drawing
   const handleMouseDown = (e) => {
-    const { offsetX, offsetY } = e.nativeEvent;
-    context.lineJoin = 'round';
-    context.lineCap = 'round';
-    context.lineWidth = brushSize;
-    context.strokeStyle = 'black';
+    const { offsetX, offsetY } = e.nativeEvent
+    context.lineJoin = 'round'
+    context.lineCap = 'round'
+    context.lineWidth = brushSize
+    context.strokeStyle = 'black'
 
-    context.beginPath();
-    context.moveTo(offsetX, offsetY);
+    context.beginPath()
+    context.moveTo(offsetX, offsetY)
 
-    setDrawing(true);
-  };
+    setDrawing(true)
+  
+  }
 
   // Handle mouse move event to draw
   const handleMouseMove = (e) => {
-    if (!drawing) return;
-    const { offsetX, offsetY } = e.nativeEvent;
-    context.lineTo(offsetX, offsetY);
-    context.stroke();
-  };
+    if (!drawing) return
+    const { offsetX, offsetY } = e.nativeEvent
+    context.lineTo(offsetX, offsetY)
+    context.stroke()
+  }
 
   // Handle mouse up event to stop drawing
   const handleMouseUp = () => {
     if (drawing) {
-      context.closePath();
-      setDrawing(false);
+      context.closePath()
+      setDrawing(false)
 
       // Save the current canvas state for undo
-      setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()]);
+      setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
     }
-  };
+  }
 
   // Handle brush size change
   const handleBrushSizeChange = (e) => {
-    setBrushSize(parseInt(e.target.value));
-  };
+    setBrushSize(parseInt(e.target.value))
+  }
 
   // Handle undo
   const handleUndo = () => {
     if (undoStack.length > 1) {
-      const lastState = undoStack.pop();
-      setRedoStack((prev) => [...prev, lastState]);
-      const img = new Image();
-      img.src = undoStack[undoStack.length - 1];
+      const lastState = undoStack.pop()
+      setRedoStack((prev) => [...prev, lastState])
+      const img = new Image()
+      img.src = undoStack[undoStack.length - 1]
       img.onload = () => {
-        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        context.drawImage(img, 0, 0);
-      };
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        context.drawImage(img, 0, 0)
+      }
     } else {
       const lastState = undoStack.pop()
       setRedoStack((prev) => [...prev, lastState])
       context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     }
-  };
+  }
 
   // Handle redo
   const handleRedo = () => {
     if (redoStack.length > 0) {
-      const nextState = redoStack.pop();
-      setUndoStack((prev) => [...prev, nextState]);
-      const img = new Image();
-      img.src = nextState;
+      const nextState = redoStack.pop()
+      setUndoStack((prev) => [...prev, nextState])
+      const img = new Image()
+      img.src = nextState
       img.setAttribute('crossorigin', 'anonymous')
       img.onload = () => {
-        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        context.drawImage(img, 0, 0);
-      };
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+        context.drawImage(img, 0, 0)
+      }
     }
+  }
+
+  const invertMask = () => {
+    const imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i]
+      const g = data[i + 1]
+      const b = data[i + 2]
+      if((r+g+b) === 0 && data[i+3] === 255){
+      data[i] = 255; // Set red channel to the average value
+      data[i + 1] = 255; // Set green channel to the average value
+      data[i + 2] = 255
+      }
+      else {   // Calculate average of RGB values
+      data[i] = 0; // Set red channel to the average value
+      data[i + 1] = 0; // Set green channel to the average value
+      data[i + 2] = 0; // Set blue channel to the average value
+      }
+    }
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = context.canvas.width;
+    tempCanvas.height = context.canvas.height;
+    tempCanvas.getContext('2d').putImageData(imageData, 0, 0)
+
+    // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    // context.putImageData(imageData, 0, 0);
   };
 
   return (
@@ -113,7 +146,7 @@ function CanvasApp({image, parentWidth}) {
       <input
         type="range"
         min="10"
-        max="40"
+        max="50"
         value={brushSize}
         onChange={handleBrushSizeChange}
       />
@@ -126,6 +159,7 @@ function CanvasApp({image, parentWidth}) {
       <IconButton aria-label="redo" onClick={handleRedo} color="primary" style={{color: '#949494', marginLeft: '1px',background: 'rgba(00,0,0, 0.6)', borderTopLeftRadius: 0, borderTopRightRadius: '10px', borderBottomLeftRadius: 0, borderBottomRightRadius: '10px'}}>
         <RedoIcon fontSize="small"/>
       </IconButton>
+      <button onClick={invertMask} title="invert"/>
       </div>
       <canvas
         id="my-canvas"
@@ -138,7 +172,7 @@ function CanvasApp({image, parentWidth}) {
         onMouseUp={handleMouseUp}
       />
     </>
-  );
+  )
 }
 
-export default CanvasApp;
+export default CanvasApp
