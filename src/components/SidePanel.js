@@ -54,7 +54,7 @@ const SidePanel= ({results, selectImage, selectCaption, selectedResult, selected
 							className='capitalize-first-letter'
 							elevation={3} 
 							onClick={()=> selectCaption(index)}
-							style={{background: selectedCaption===index? 'rgba(0,0,0,0.5)': 'transparent', textAlign: 'left', color: selectedCaption===index? 'white': 'grey', marginBottom: '10px', padding: '5px', fontSize: '13px', borderColor: selectedCaption === index? 'white': 'grey'}}
+							style={{background: 'rgba(0,0,0,0.5)', textAlign: 'left', color: 'white', marginBottom: '10px', padding: '5px', fontSize: '13px', borderColor: selectedCaption === index? 'white': 'black'}}
 						>{caption}</Paper>
 					})}
 					</Grid>
