@@ -2,16 +2,14 @@ import React, { useState, useRef, useEffect } from 'react'
 import { IconButton } from '@material-ui/core'
 import UndoIcon from '@material-ui/icons/Undo'
 import RedoIcon from '@material-ui/icons/Redo'
-import usePrevious from '../usePrevious'
 
-function CanvasApp({image, parentWidth, resultsGenerated}) {
+function CanvasApp({image, parentWidth, addImage, history, step}) {
   const canvasRef = useRef(null)
   const [context, setContext] = useState(null)
   const [brushSize, setBrushSize] = useState(15)
   const [drawing, setDrawing] = useState(false)
   const [undoStack, setUndoStack] = useState([])
   const [redoStack, setRedoStack] = useState([])
-  const prevResultsGenerated = usePrevious(resultsGenerated)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -27,16 +25,13 @@ function CanvasApp({image, parentWidth, resultsGenerated}) {
       image1.src = image.data_url
       image1.width = 600
       image1.height = 600
-      if (resultsGenerated && prevResultsGenerated !== resultsGenerated) {
-        setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
-      }
       image1.addEventListener("load", () => {
         context?.drawImage(image1, 0, 0, 600, 600)
-        setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
+        setUndoStack([canvasRef.current.toDataURL()])
       })
       image1.addEventListener("error", (err)=> console.log("error", err))
     }
-  }, [context, image, parentWidth, resultsGenerated, prevResultsGenerated])
+  }, [context, image, parentWidth])
 
   // Handle mouse down event to start drawing
   const handleMouseDown = (e) => {
@@ -91,8 +86,12 @@ function CanvasApp({image, parentWidth, resultsGenerated}) {
     } else {
       const lastState = undoStack.pop()
       setRedoStack((prev) => [...prev, lastState])
-      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-    }
+      if(history.length === 0)
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
+      else {
+          addImage({data_url: history[step]}, step-1)
+        }
+    } 
   }
 
   // Handle redo
@@ -109,35 +108,6 @@ function CanvasApp({image, parentWidth, resultsGenerated}) {
       }
     }
   }
-
-  const invertMask = () => {
-    const imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i]
-      const g = data[i + 1]
-      const b = data[i + 2]
-      if((r+g+b) === 0 && data[i+3] === 255){
-      data[i] = 255; // Set red channel to the average value
-      data[i + 1] = 255; // Set green channel to the average value
-      data[i + 2] = 255
-      }
-      else {   // Calculate average of RGB values
-      data[i] = 0; // Set red channel to the average value
-      data[i + 1] = 0; // Set green channel to the average value
-      data[i + 2] = 0; // Set blue channel to the average value
-      }
-    }
-
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = context.canvas.width;
-    tempCanvas.height = context.canvas.height;
-    tempCanvas.getContext('2d').putImageData(imageData, 0, 0)
-
-    // context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    // context.putImageData(imageData, 0, 0);
-  };
 
   return (
     <>

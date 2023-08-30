@@ -8,10 +8,15 @@ export const removeImage = (image_name) => (dispatch) => {
     })
 }
 
-export const addImage = (data) => (dispatch) => {
+export const addImage = (data, step) => (dispatch) => {
     dispatch({
       type: ADD_IMAGE,
       payload: data
+    })
+    if(step || step ===0)
+    dispatch({
+      type: 'SET_HISTORY_STEP',
+      payload: step
     })
 }
 
@@ -41,6 +46,10 @@ export const fillObject =(masked, original, textPrompt, negativePrompt) => async
   dispatch({
     type: SET_LOADING,
     payload: true
+  })
+  dispatch({
+    type: 'SET_HISTORY',
+    payload: original
   })
 
   try {
@@ -109,6 +118,10 @@ export const replaceObject =(masked, original, textPrompt, negativePrompt) => as
     type: SET_LOADING,
     payload: true
   })
+  dispatch({
+    type: 'SET_HISTORY',
+    payload: original
+  })
 
   try {
     const main = async(image_url, mask_url) => {
@@ -175,6 +188,10 @@ export const removeObject =(masked, original) => async(dispatch) => {
   dispatch({
     type: SET_LOADING,
     payload: true
+  })
+  dispatch({
+    type: 'SET_HISTORY',
+    payload: original
   })
   // dispatch({
   //   type: UPDATE_RESULT,
@@ -253,7 +270,16 @@ export const generateCaption = (image_url) => async(dispatch) => {
   })
 
   try {
-    const res = await axios.post(`http://localhost:8000/v1/get_captions`, {image_url}, {headers: {
+    let img_url, res
+    if(!image_url.startsWith("https")) {
+      res = await axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": image_url}, {headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      }})
+      img_url = res.data
+    } else {
+      img_url = image_url
+    }
+    res = await axios.post(`http://localhost:8000/v1/get_captions`, {image_url: img_url}, {headers: {
       'Content-Type': 'application/json; charset=utf-8'
     }})
 
@@ -267,4 +293,11 @@ export const generateCaption = (image_url) => async(dispatch) => {
       payload: err
     })
   }
+}
+
+export const setHistoryStep = (step)=> (dispatch) =>{
+  dispatch({
+    type: 'SET_HISTORY_STEP',
+    payload: step
+  })
 }

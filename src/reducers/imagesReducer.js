@@ -11,6 +11,8 @@ import {
     image: {},
     error: {},
     loading: false,
+    history: [],
+    step: -1,
     results: [
       // {url: 'https://pradeep-test-bucket.s3.us-west-1.amazonaws.com/IMG_3525.jpeg'},
       // {url: 'https://pradeep-test-bucket.s3.us-west-1.amazonaws.com/christmas-gettyimages-184652817.jpeg'},
@@ -39,7 +41,12 @@ import {
       case ADD_IMAGE:
         return {
           ...state,
-          image: payload
+          image: payload,
+          results: [payload.data_url],
+          selected: {
+            res: payload.data_url,
+            idx: 0
+          }
         }
       case REMOVE_IMAGE:
         return {
@@ -56,6 +63,25 @@ import {
         return {
           ...state,
           selectedCaption: payload
+        }
+      case 'SET_HISTORY':
+        let newHistory = [...state.history],
+        newStep = state.step+1
+        if(newStep >= state.history.length) {
+          newHistory = [...state.history, payload]
+        } else {
+          newHistory[newStep] = payload
+        }
+        return {
+          ...state,
+          step: newStep,
+          history: newHistory.slice(0, newStep+1)
+        }
+      case 'SET_HISTORY_STEP':
+        return {
+          ...state,
+          step: payload,
+          history: state.history.slice(0, payload+1)
         }
       case UPDATE_RESULT:
         return {

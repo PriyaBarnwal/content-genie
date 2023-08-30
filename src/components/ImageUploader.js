@@ -6,7 +6,7 @@ import {addImage} from '../actions/imagesActions'
 import imagePicker from '../assets/imagepicker.png'
 import ImageEditor from './ImageEditor'
 
-const ImageUploader = ({addImage, image, resultsGenerated}) => {
+const ImageUploader = ({addImage, image, resultsGenerated, history, step}) => {
  
   const onChange = (imageList) => {
     addImage(imageList[0])
@@ -33,7 +33,7 @@ const ImageUploader = ({addImage, image, resultsGenerated}) => {
           <div ref={uploaderContainerRef} className='image-uploader' {...dragProps} style={isDragging? {backgroundColor: 'grey'}: {}} >
 						{image.data_url && 
 						<>
-						<ImageEditor image={image} parentWidth={uploaderContainerRef.current?.clientWidth || 900} resultsGenerated={resultsGenerated} />
+						<ImageEditor image={image} parentWidth={uploaderContainerRef.current?.clientWidth || 900} resultsGenerated={resultsGenerated} addImage={addImage} history={history} step={step} />
 						</>}
             {!image.data_url ? <img src={imagePicker} onClick={onImageUpload} alt="" style={{cursor: 'pointer'}}/>: <img src={imagePicker} onClick={onImageUpload} height="30" alt="" style={{cursor: 'pointer', position: 'absolute', top: '2%', left: '2%'}}/>}
             {<Button onClick={onImageUpload} color="transparent" variant="text" style={btnStyle}>{!image.data_url ? 'Upload image' : 'Change'}</Button>}
@@ -45,7 +45,9 @@ const ImageUploader = ({addImage, image, resultsGenerated}) => {
 }
 const mapStateToProps = state => ({
   image: state.images.image,
-  resultsGenerated: state.images.resultsGenerated
+  resultsGenerated: state.images.resultsGenerated,
+  history: state.images.history,
+  step: state.images.step
 })
 
 export default connect(mapStateToProps, { addImage })(ImageUploader)
