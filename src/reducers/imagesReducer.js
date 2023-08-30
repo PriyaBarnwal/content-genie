@@ -101,7 +101,7 @@ import {
           ...state,
           loading: false,
           captionGenerated: true,
-          captions: Object.values(payload.captions),
+          captions: payload.captions,
           hashtags: payload.hashtags
         }
       case SET_LOADING: 

@@ -6,7 +6,15 @@ import { selectImage, selectCaption, generateCaption, reset } from '../actions/i
 
 const SidePanel= ({results, selectImage, selectCaption, selectedResult, selectedCaption, captionGenerated, generateCaption, captions, hashtags, reset}) => {
 	const imgObjects = results.map((res, index) => {
-		return <img src={res} alt="" height="150" width="260" style={{marginBottom: '10px', borderRadius: '5px', cursor: 'pointer', border: (selectedResult.idx === index? '1px solid white': 0)}} onClick={()=> selectImage(res, index)}/>
+		return <img 
+						src={res} 
+						alt="" 
+						height="207" 
+						width="220" 
+						style={{marginBottom: '10px', borderRadius: '5px', cursor: 'pointer', border: (selectedResult.idx === index? '1px solid white': 0)}} 
+						key={index} 
+						onClick={()=> selectImage(res, index)}
+					/>
 	})
 
 	const handleDownload = () => {
@@ -22,15 +30,18 @@ const SidePanel= ({results, selectImage, selectCaption, selectedResult, selected
 	const sideObj = () => {
 		if (results.length>0 && !captionGenerated) {
 			return (
-				<Grid item style={{textAlign: 'center', marginTop: '10px'}}>
+				<>
+				<Grid item style={{textAlign: 'center', marginTop: '10px', overflowY: 'scroll', maxHeight: '650px',}}>
 				{imgObjects}
-				<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize'}} onClick={handleDownload}>
+
+				</Grid>
+				<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize', marginTop: '20px'}} onClick={handleDownload}>
 				Download image
 			</Button> 
 			<Button variant="contained" color="info" style={{ background: 'rgba(255, 255, 255, 0.55)', textTransform: 'capitalize', marginTop: '10px'}} fullWidth onClick={()=> generateCaption(selectedResult.res)}>
 				Generate captions
 			</Button> 
-				</Grid>
+			</>
 			)
 		} else if (captionGenerated && captions.length>0) {
 			return (
@@ -38,7 +49,9 @@ const SidePanel= ({results, selectImage, selectCaption, selectedResult, selected
 				<Grid item style={{overflowY: 'scroll', maxHeight: '500px', textAlign: 'center', marginTop: '10px'}}>
 					{captions.map((caption, index) => {
 						return <Paper 
+							key={index}
 							variant="outlined" 
+							className='capitalize-first-letter'
 							elevation={3} 
 							onClick={()=> selectCaption(index)}
 							style={{background: selectedCaption===index? 'rgba(0,0,0,0.5)': 'transparent', textAlign: 'left', color: selectedCaption===index? 'white': 'grey', marginBottom: '10px', padding: '5px', fontSize: '13px', borderColor: selectedCaption === index? 'white': 'grey'}}
@@ -48,11 +61,11 @@ const SidePanel= ({results, selectImage, selectCaption, selectedResult, selected
 					<Grid item style={{fontSize: '22px', textAlign: 'center', borderBottom: '1px solid grey', borderTop: '1px solid grey', padding: '10px', marginTop: '10px', height: '50px', width: '100%'}} >
 						Generated Hashtags
 					</Grid>
-					<Paper 
-							variant="outlined" 
-							elevation={3} 
-							style={{background:'rgba(0,0,0,0.5)', minHeight: '50px', textAlign: 'left', color:'white', marginBottom: '10px', marginTop: '10px', padding: '20px 10px', fontSize: '15px', borderColor: 'white'}}
-						>{hashtags.join(', ')}</Paper>
+					<Paper
+						variant="outlined" 
+						elevation={3} 
+						style={{background:'rgba(0,0,0,0.5)', minHeight: '50px', textAlign: 'left', color:'white', marginBottom: '10px', marginTop: '10px', padding: '20px 10px', fontSize: '15px', borderColor: 'white'}}
+					>{hashtags.join(', ')}</Paper>
 						<Button variant="contained" color="info" fullWidth style={{background: '#95a3e4', textTransform: 'capitalize'}} onClick={()=> console.log('')}>
 							Open in editor
 						</Button>

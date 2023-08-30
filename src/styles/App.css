@@ -131,6 +131,9 @@ input[type="range"] {
   color: whitesmoke;
 }
 
+.capitalize-first-letter::first-letter {
+  text-transform: capitalize;
+}
 
 .App-logo {
   height: 40vmin;

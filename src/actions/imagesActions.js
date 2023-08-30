@@ -83,8 +83,8 @@ export const fillObject =(masked, original, textPrompt, negativePrompt) => async
 
     const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
 
-    let origin = await responses[0];
-    let mask = await responses[1];
+    let origin = responses[0].data
+    let mask = responses[1].data
    
     if(origin!=null && mask !=null)
         main(origin, mask);
@@ -135,8 +135,8 @@ export const replaceObject =(masked, original, textPrompt, negativePrompt) => as
 
     const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
 
-    let origin = await responses[0];
-    let mask = await responses[1];
+    let origin = responses[0].data
+    let mask = responses[1].data
    
     if(origin!=null && mask !=null)
         main(origin, mask);
@@ -158,15 +158,6 @@ export const removeObject =(masked, original) => async(dispatch) => {
     type: 'SET_HISTORY',
     payload: original
   })
-  // dispatch({
-  //   type: UPDATE_RESULT,
-  //   payload: [
-  //     "https://pradeep-test-bucket.s3.us-west-1.amazonaws.com/IMG_3525.jpeg",
-  //   "https://pradeep-test-bucket.s3.us-west-1.amazonaws.com/christmas-gettyimages-184652817.jpeg",
-  //   "https://vista-hackathon.s3.us-west-2.amazonaws.com/output_images/fill/6A9TJ.jpg",
-  //   "https://vista-hackathon.s3.us-west-2.amazonaws.com/dump_images/37ZZ7.png"
-  //   ]
-  // })
   try {
     const main = async(image_url, mask_url) => {
       const formData = {
@@ -192,8 +183,8 @@ export const removeObject =(masked, original) => async(dispatch) => {
     }
     const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
 
-    let origin = await responses[0];
-    let mask = await responses[1];
+    let origin = responses[0].data
+    let mask = responses[1].data
    
     if(origin!=null && mask !=null)
         main(origin, mask);
@@ -223,9 +214,9 @@ export const generateCaption = (image_url) => async(dispatch) => {
     } else {
       img_url = image_url
     }
-    res = await axios.post(axios.post(INPAINTING_ENDPOINT.concat('v1/get_captions'), {image_url: img_url}, {headers: {
+    res = await axios.post(INPAINTING_ENDPOINT.concat('v1/get_captions'), {image_url: img_url}, {headers: {
       'Content-Type': 'application/json; charset=utf-8'
-    }}));
+    }})
 
     dispatch({
       type: UPDATE_CAPTION,
@@ -248,7 +239,7 @@ export const setHistoryStep = (step)=> (dispatch) =>{
 const getimageEndpoints=async(data) =>{
   let endpoints = null;
   if(data.startsWith("https"))
-     endpoints = data ; 
+     endpoints = {data} 
   else { 
     endpoints = axios.post(INPAINTING_ENDPOINT.concat('v1/upload_image'), {"base64_image": data}, {headers: {
       'Content-Type': 'application/json; charset=utf-8'

@@ -2,7 +2,7 @@
 
 
 ```
-npm install
+npm install --force
 npm start
 ```
 
