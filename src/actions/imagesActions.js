@@ -1,6 +1,9 @@
 import {REMOVE_IMAGE, ADD_IMAGE, SET_LOADING, SET_ERROR, UPDATE_RESULT, UPDATE_CAPTION} from './constants'
 import axios from 'axios'
 
+/*eslint no-undef: 0*/
+const INPAINTING_ENDPOINT= "http://10.244.188.91:8000/";
+
 export const removeImage = (image_name) => (dispatch) => {
     dispatch({
       type: REMOVE_IMAGE,
@@ -68,7 +71,7 @@ export const fillObject =(masked, original, textPrompt, negativePrompt) => async
         "text_prompt": textPrompt,
         "negative_prompt": negativePrompt
       }
-      const result = await axios.post(`http://localhost:8000/v1/replace_anything`, {...formData}, {headers: {
+      const result = await axios.post( INPAINTING_ENDPOINT.concat('v1/replace_anything'), {...formData}, {headers: {
         'Content-Type': 'application/json; charset=utf-8'
       }})
   
@@ -78,33 +81,12 @@ export const fillObject =(masked, original, textPrompt, negativePrompt) => async
       })
     }
 
-    let mask_url, image_url
-    const promises = []
-    if(masked.startsWith("https"))
-      mask_url = masked
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": masked}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-    if(original.startsWith("https"))
-      image_url = original
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": original}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-     
-    if(promises.length>0) {
-      Promise.all(promises).then(async(res)=> {
-        if(res.length>1)
-          main(res[1].data, res[0].data)
-        else if (res.length>0)
-          main(image_url || res[0].data, mask_url || res[0].data)
-      })
-    } else {
-      main(image_url, mask_url)
-    }
+    let origin = await getimageEndpoints(original);
+    let mask = await getimageEndpoints(masked);
+   
+    if(origin!=null && mask !=null)
+        main(origin, mask);
+
   } catch(err) {
       dispatch({
         type: SET_ERROR,
@@ -139,7 +121,7 @@ export const replaceObject =(masked, original, textPrompt, negativePrompt) => as
         "text_prompt": textPrompt,
         "negative_prompt": negativePrompt
       }
-      const result = await axios.post(`http://localhost:8000/v1/fill_anything`, {...formData}, {headers: {
+      const result = await axios.post(INPAINTING_ENDPOINT.concat('v1/fill_anything'), {...formData}, {headers: {
         'Content-Type': 'application/json; charset=utf-8'
       }})
   
@@ -149,33 +131,12 @@ export const replaceObject =(masked, original, textPrompt, negativePrompt) => as
       })
     }
 
-    let mask_url, image_url
-    const promises = []
-    if(masked.startsWith("https"))
-      mask_url = masked
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": masked}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-    if(original.startsWith("https"))
-      image_url = original
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": original}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-     
-    if(promises.length>0) {
-      Promise.all(promises).then(async(res)=> {
-        if(res.length>1)
-          main(res[1].data, res[0].data)
-        else if (res.length>0)
-          main(image_url || res[0].data, mask_url || res[0].data)
-      })
-    } else {
-      main(image_url, mask_url)
-    }
+    let origin = await getimageEndpoints(original);
+    let mask = await getimageEndpoints(masked);
+   
+    if(origin!=null && mask !=null)
+        main(origin, mask);
+      
   } catch(err) {
     dispatch({
       type: SET_ERROR,
@@ -216,7 +177,7 @@ export const removeObject =(masked, original) => async(dispatch) => {
           }
         ]
       }
-      const result = await axios.post(`http://localhost:8000/v1/remove_anything`, {...formData}, {headers: {
+      const result = await axios.post(INPAINTING_ENDPOINT.concat('v1/remove_anything'), {...formData}, {headers: {
         'Content-Type': 'application/json; charset=utf-8'
       }})
   
@@ -226,33 +187,11 @@ export const removeObject =(masked, original) => async(dispatch) => {
       })
     }
 
-    let mask_url, image_url
-    const promises = []
-    if(masked.startsWith("https"))
-      mask_url = masked
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": masked}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-    if(original.startsWith("https"))
-      image_url = original
-    else {
-      promises.push(axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": original}, {headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      }}))
-    }
-     
-    if(promises.length>0) {
-      Promise.all(promises).then(async(res)=> {
-        if(res.length>1)
-          main(res[1].data, res[0].data)
-        else if (res.length>0)
-          main(image_url || res[0].data, mask_url || res[0].data)
-      })
-    } else {
-      main(image_url, mask_url)
-    }
+    let origin = await getimageEndpoints(original);
+    let mask = await getimageEndpoints(masked);
+   
+    if(origin!=null && mask !=null)
+        main(origin, mask);
     
   } catch(err) {
     dispatch({
@@ -272,21 +211,21 @@ export const generateCaption = (image_url) => async(dispatch) => {
   try {
     let img_url, res
     if(!image_url.startsWith("https")) {
-      res = await axios.post(`http://localhost:8000/v1/upload_image`, {"base64_image": image_url}, {headers: {
+      res = await axios.post(INPAINTING_ENDPOINT.concat('v1/upload_image'), {"base64_image": image_url}, {headers: {
         'Content-Type': 'application/json; charset=utf-8'
-      }})
+      }});
       img_url = res.data
     } else {
       img_url = image_url
     }
-    res = await axios.post(`http://localhost:8000/v1/get_captions`, {image_url: img_url}, {headers: {
+    res = await axios.post(axios.post(INPAINTING_ENDPOINT.concat('v1/get_captions'), {image_url: img_url}, {headers: {
       'Content-Type': 'application/json; charset=utf-8'
-    }})
+    }}));
 
     dispatch({
       type: UPDATE_CAPTION,
       payload: res.data
-    })
+    });
   } catch(err) {
     dispatch({
       type: SET_ERROR,
@@ -301,3 +240,15 @@ export const setHistoryStep = (step)=> (dispatch) =>{
     payload: step
   })
 }
+const getimageEndpoints=async(data) =>{
+  let endpoints = null;
+  if(data.startsWith("https"))
+     endpoints = data ; 
+  else { 
+    endpoints = axios.post(INPAINTING_ENDPOINT.concat('v1/upload_image'), {"base64_image": data}, {headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+     }}); 
+  }
+return endpoints;
+}
+
