@@ -25,14 +25,13 @@ function CanvasApp({image, parentWidth, resultsGenerated}) {
       const image1 = document.createElement("img")
       image1.setAttribute('crossorigin', 'anonymous')
       image1.src = image.data_url
-      console.log("yo")
-      image1.width = parentWidth
+      image1.width = 600
       image1.height = 600
       if (resultsGenerated && prevResultsGenerated !== resultsGenerated) {
         setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
       }
       image1.addEventListener("load", () => {
-        context?.drawImage(image1, 0, 0, parentWidth, 600)
+        context?.drawImage(image1, 0, 0, 600, 600)
         setUndoStack((prev) => [...prev, canvasRef.current.toDataURL()])
       })
       image1.addEventListener("error", (err)=> console.log("error", err))
@@ -159,13 +158,12 @@ function CanvasApp({image, parentWidth, resultsGenerated}) {
       <IconButton aria-label="redo" onClick={handleRedo} color="primary" style={{color: '#949494', marginLeft: '1px',background: 'rgba(00,0,0, 0.6)', borderTopLeftRadius: 0, borderTopRightRadius: '10px', borderBottomLeftRadius: 0, borderBottomRightRadius: '10px'}}>
         <RedoIcon fontSize="small"/>
       </IconButton>
-      <button onClick={invertMask} title="invert"/>
       </div>
       <canvas
         id="my-canvas"
-        style={{borderRadius: '10px'}}
+        style={{borderRadius: '1px'}}
         ref={canvasRef}
-        width={parentWidth}
+        width={600}
         height={600}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
