@@ -81,8 +81,10 @@ export const fillObject =(masked, original, textPrompt, negativePrompt) => async
       })
     }
 
-    let origin = await getimageEndpoints(original);
-    let mask = await getimageEndpoints(masked);
+    const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
+
+    let origin = await responses[0];
+    let mask = await responses[1];
    
     if(origin!=null && mask !=null)
         main(origin, mask);
@@ -131,8 +133,10 @@ export const replaceObject =(masked, original, textPrompt, negativePrompt) => as
       })
     }
 
-    let origin = await getimageEndpoints(original);
-    let mask = await getimageEndpoints(masked);
+    const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
+
+    let origin = await responses[0];
+    let mask = await responses[1];
    
     if(origin!=null && mask !=null)
         main(origin, mask);
@@ -186,9 +190,10 @@ export const removeObject =(masked, original) => async(dispatch) => {
         payload: result.data?.image_urls
       })
     }
+    const responses = await Promise.all([ getimageEndpoints(original), getimageEndpoints(masked)])
 
-    let origin = await getimageEndpoints(original);
-    let mask = await getimageEndpoints(masked);
+    let origin = await responses[0];
+    let mask = await responses[1];
    
     if(origin!=null && mask !=null)
         main(origin, mask);
