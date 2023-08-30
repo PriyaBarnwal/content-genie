@@ -33,7 +33,7 @@ const MainPanel= ({addPrompt, removePrompt, loading, includes, avoid, image, rem
 		const tempCanvas = document.createElement('canvas');
 		tempCanvas.width = context.canvas.width;
 		tempCanvas.height = context.canvas.height;
-		tempCanvas.getContext('2d').putImageData(imageData, 0, 0)
+		tempCanvas.getContext('2d').putImageData(imageData, 0, 0);
 		return tempCanvas.toDataURL("image/png")
 	}
 	const fillBackground =() => {
