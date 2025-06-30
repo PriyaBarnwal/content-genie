@@ -21,16 +21,6 @@ Content GENie is an AI-based tool designed to help marketing teams create engagi
 
 ---
 
-## ⚙️ Tech Stack
-
-- **Frontend**: React
-- **Backend**: Python APIs
-- **AI/ML**: 
-  - Segment Anything Model (SAM) for object segmentation
-  - Multilingual caption/hashtag generation using LLMs
-
----
-
 ## 📽️ Demo
 
 👉 check this link for the demo: https://drive.google.com/file/d/1evZIMx3Z06g9DjFRehXvrWbIu_ocGY__/view?usp=sharing
@@ -46,7 +36,7 @@ Content GENie is an AI-based tool designed to help marketing teams create engagi
 
 
 ### AI/ML Workflow
-![AI/ML workflow](ss/ai-ml-workflow.png)
+<img src="ss/ai-ml-workflow.png" alt="AI-ML workflow" height="600"/>
 
 
 ---
